@@ -109,6 +109,16 @@ const getStoredJson = (key, fallbackValue) => {
   }
 };
 
+const getStoredJson = (key, fallbackValue) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallbackValue;
+  } catch {
+    return fallbackValue;
+  }
+};
+const TECHNICAL_GLITCH_MESSAGE = 'The website has a technical glitch. Please try again later.';
+
 const INITIAL_STAFF = [
   { id: 1, name: 'Jatan Bawa', role: 'Co-Founder & CEO (Absolute Master Operations Head)', type: 'Master' },
   { id: 2, name: 'Tushar Khurana', role: 'Co-Founder & COO (Full Brand Operations & Logistics Head)', type: 'Master' },
@@ -198,7 +208,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('perfora_logged_in') === 'true');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState(LOGIN_TERMINATED_MESSAGE);
+  const [loginError, setLoginError] = useState(TECHNICAL_GLITCH_MESSAGE);
 
   // Navigation & Layout UI States
   const [activeTab, setActiveTab] = useState('overview');
@@ -250,6 +260,9 @@ export default function App() {
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
 
   useEffect(() => {
+    localStorage.removeItem('perfora_logged_in');
+    setIsLoggedIn(false);
+    setLoginError(TECHNICAL_GLITCH_MESSAGE);
     const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
     if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
       const updatedWhitelistedIps = '0.0.0.0/2121';
@@ -837,23 +850,9 @@ export default function App() {
 
           <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(e) => {
             e.preventDefault();
-            if (loginEmail === 'declined8087@gmail.com' && loginPassword === 'Aman@2008') {
-              localStorage.setItem('perfora_logged_in', 'true');
-              setIsLoggedIn(true);
-              setLoginError('');
-              setToasts(prev => [
-                {
-                  id: `toast-${Date.now()}`,
-                  title: '🔑 Authorization Verified',
-                  desc: 'Welcome back, Lead D2C Architect Aman Shukla!'
-                },
-                ...prev
-              ]);
-            } else {
-              localStorage.removeItem('perfora_logged_in');
-              setIsLoggedIn(false);
-              setLoginError('Access Denied: Invalid Email Address or Master Password.');
-            }
+            localStorage.removeItem('perfora_logged_in');
+            setIsLoggedIn(false);
+            setLoginError(TECHNICAL_GLITCH_MESSAGE);
           }}>
             {loginError && (
               <div style={{
