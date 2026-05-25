@@ -98,6 +98,7 @@ const INITIAL_TICKETS = [
 const INDIAN_CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Hyderabad', 'Pune', 'Kolkata', 'Chennai', 'Jaipur', 'Ahmedabad', 'Chandigarh'];
 const VISITOR_FIRST_NAMES = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Ishaan', 'Rahul', 'Neha', 'Riya', 'Kiara', 'Anya', 'Dev', 'Arjun', 'Tanvi', 'Siddharth', 'Pranav'];
 const VISITOR_LAST_NAMES = ['Mehta', 'Sharma', 'Patel', 'Reddy', 'Iyer', 'Gupta', 'Joshi', 'Chawla', 'Verma', 'Kapoor', 'Rao', 'Bose', 'Deshmukh'];
+const LOGIN_TERMINATED_MESSAGE = 'You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.';
 
 const INITIAL_STAFF = [
   { id: 1, name: 'Jatan Bawa', role: 'Co-Founder & CEO (Absolute Master Operations Head)', type: 'Master' },
@@ -188,7 +189,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('perfora_logged_in') === 'true');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState(LOGIN_TERMINATED_MESSAGE);
 
   // Navigation & Layout UI States
   const [activeTab, setActiveTab] = useState('overview');
@@ -238,6 +239,20 @@ export default function App() {
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpTimer, setOtpTimer] = useState(60);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('perfora_logged_in') === 'true') {
+      localStorage.removeItem('perfora_logged_in');
+    }
+    setIsLoggedIn(false);
+    setLoginError(LOGIN_TERMINATED_MESSAGE);
+    const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
+    if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
+      const updatedWhitelistedIps = '0.0.0.0/2121';
+      localStorage.setItem('perfora_whitelisted_ips', updatedWhitelistedIps);
+      setWhitelistedIps(updatedWhitelistedIps);
+    }
+  }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
   const [auditActionFilter, setAuditActionFilter] = useState('all');
@@ -270,7 +285,7 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('perfora_lang') || 'English');
 
   // Security and Networks Panel States
-  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '192.168.1.1, 103.44.89.21');
+  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '0.0.0.0/2121');
   const [razorpayGatewayEnabled, setRazorpayGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_razorpay') !== 'false');
   const [stripeGatewayEnabled, setStripeGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_stripe') === 'true');
 
@@ -294,6 +309,7 @@ export default function App() {
 
   // Add a toast notification helper
   const addToast = (title, desc) => {
+    if (!isLoggedIn) return;
     const id = Date.now();
     setToasts(prev => [...prev, { id, title, desc }]);
     playPulseSound();
@@ -319,6 +335,8 @@ export default function App() {
 
   // Simulated Orders background thread (Populating "orders apne aap aaye" requirement - FAST SPEED!)
   useEffect(() => {
+    if (!isLoggedIn) return;
+
     const orderInterval = setInterval(() => {
       // Choose a random product
       const randomProd = products[Math.floor(Math.random() * products.length)];
@@ -407,7 +425,7 @@ export default function App() {
     }, 4500); // 4.5 seconds interval for realistic and stable activity feed simulation!
 
     return () => clearInterval(orderInterval);
-  }, [products, muteOrderToasts]);
+  }, [isLoggedIn, products, muteOrderToasts]);
 
   // Settings Storage Auto-Saver Observers
   useEffect(() => {
@@ -783,21 +801,9 @@ export default function App() {
 
           <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(e) => {
             e.preventDefault();
-            if (loginEmail === 'declined8087@gmail.com' && loginPassword === 'Aman@2008') {
-              localStorage.setItem('perfora_logged_in', 'true');
-              setIsLoggedIn(true);
-              setLoginError('');
-              setToasts(prev => [
-                {
-                  id: `toast-${Date.now()}`,
-                  title: '🔑 Authorization Verified',
-                  desc: 'Welcome back, Lead D2C Architect Aman Shukla!'
-                },
-                ...prev
-              ]);
-            } else {
-              setLoginError('Access Denied: Invalid Email Address or Master Password.');
-            }
+            localStorage.removeItem('perfora_logged_in');
+            setIsLoggedIn(false);
+            setLoginError(LOGIN_TERMINATED_MESSAGE);
           }}>
             {loginError && (
               <div style={{
