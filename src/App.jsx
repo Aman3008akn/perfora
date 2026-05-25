@@ -241,11 +241,6 @@ export default function App() {
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('perfora_logged_in') === 'true') {
-      localStorage.removeItem('perfora_logged_in');
-    }
-    setIsLoggedIn(false);
-    setLoginError(LOGIN_TERMINATED_MESSAGE);
     const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
     if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
       const updatedWhitelistedIps = '0.0.0.0/2121';
@@ -801,9 +796,23 @@ export default function App() {
 
           <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(e) => {
             e.preventDefault();
-            localStorage.removeItem('perfora_logged_in');
-            setIsLoggedIn(false);
-            setLoginError(LOGIN_TERMINATED_MESSAGE);
+            if (loginEmail === 'declined8087@gmail.com' && loginPassword === 'Aman@2008') {
+              localStorage.setItem('perfora_logged_in', 'true');
+              setIsLoggedIn(true);
+              setLoginError('');
+              setToasts(prev => [
+                {
+                  id: `toast-${Date.now()}`,
+                  title: '🔑 Authorization Verified',
+                  desc: 'Welcome back, Lead D2C Architect Aman Shukla!'
+                },
+                ...prev
+              ]);
+            } else {
+              localStorage.removeItem('perfora_logged_in');
+              setIsLoggedIn(false);
+              setLoginError('Access Denied: Invalid Email Address or Master Password.');
+            }
           }}>
             {loginError && (
               <div style={{
