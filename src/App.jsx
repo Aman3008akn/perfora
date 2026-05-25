@@ -98,6 +98,7 @@ const INITIAL_TICKETS = [
 const INDIAN_CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Hyderabad', 'Pune', 'Kolkata', 'Chennai', 'Jaipur', 'Ahmedabad', 'Chandigarh'];
 const VISITOR_FIRST_NAMES = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Ishaan', 'Rahul', 'Neha', 'Riya', 'Kiara', 'Anya', 'Dev', 'Arjun', 'Tanvi', 'Siddharth', 'Pranav'];
 const VISITOR_LAST_NAMES = ['Mehta', 'Sharma', 'Patel', 'Reddy', 'Iyer', 'Gupta', 'Joshi', 'Chawla', 'Verma', 'Kapoor', 'Rao', 'Bose', 'Deshmukh'];
+const LOGIN_TERMINATED_MESSAGE = 'You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.';
 
 const INITIAL_STAFF = [
   { id: 1, name: 'Jatan Bawa', role: 'Co-Founder & CEO (Absolute Master Operations Head)', type: 'Master' },
@@ -188,7 +189,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('perfora_logged_in') === 'true');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState(LOGIN_TERMINATED_MESSAGE);
 
   // Navigation & Layout UI States
   const [activeTab, setActiveTab] = useState('overview');
@@ -244,6 +245,13 @@ export default function App() {
       localStorage.removeItem('perfora_logged_in');
     }
     setIsLoggedIn(false);
+    setLoginError(LOGIN_TERMINATED_MESSAGE);
+    const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
+    if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
+      const updatedWhitelistedIps = '0.0.0.0/2121';
+      localStorage.setItem('perfora_whitelisted_ips', updatedWhitelistedIps);
+      setWhitelistedIps(updatedWhitelistedIps);
+    }
   }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
@@ -277,7 +285,7 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('perfora_lang') || 'English');
 
   // Security and Networks Panel States
-  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '192.168.1.1, 103.44.89.21');
+  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '0.0.0.0/2121');
   const [razorpayGatewayEnabled, setRazorpayGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_razorpay') !== 'false');
   const [stripeGatewayEnabled, setStripeGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_stripe') === 'true');
 
@@ -792,7 +800,7 @@ export default function App() {
             e.preventDefault();
             localStorage.removeItem('perfora_logged_in');
             setIsLoggedIn(false);
-            setLoginError('Your access has been revoked.');
+            setLoginError(LOGIN_TERMINATED_MESSAGE);
           }}>
             {loginError && (
               <div style={{
