@@ -783,21 +783,9 @@ export default function App() {
 
           <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(e) => {
             e.preventDefault();
-            if (loginEmail === 'declined8087@gmail.com' && loginPassword === 'Aman@2008') {
-              localStorage.setItem('perfora_logged_in', 'true');
-              setIsLoggedIn(true);
-              setLoginError('');
-              setToasts(prev => [
-                {
-                  id: `toast-${Date.now()}`,
-                  title: '🔑 Authorization Verified',
-                  desc: 'Welcome back, Lead D2C Architect Aman Shukla!'
-                },
-                ...prev
-              ]);
-            } else {
-              setLoginError('Access Denied: Invalid Email Address or Master Password.');
-            }
+            localStorage.removeItem('perfora_logged_in');
+            setIsLoggedIn(false);
+            setLoginError('Your access has been revoked.');
           }}>
             {loginError && (
               <div style={{
