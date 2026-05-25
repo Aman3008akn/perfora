@@ -188,7 +188,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('perfora_logged_in') === 'true');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState('You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.');
 
   // Navigation & Layout UI States
   const [activeTab, setActiveTab] = useState('overview');
@@ -238,6 +238,14 @@ export default function App() {
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpTimer, setOtpTimer] = useState(60);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('perfora_logged_in') === 'true') {
+      localStorage.removeItem('perfora_logged_in');
+    }
+    setIsLoggedIn(false);
+    setLoginError('You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.');
+  }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
   const [auditActionFilter, setAuditActionFilter] = useState('all');
@@ -783,21 +791,9 @@ export default function App() {
 
           <form style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={(e) => {
             e.preventDefault();
-            if (loginEmail === 'declined8087@gmail.com' && loginPassword === 'Aman@2008') {
-              localStorage.setItem('perfora_logged_in', 'true');
-              setIsLoggedIn(true);
-              setLoginError('');
-              setToasts(prev => [
-                {
-                  id: `toast-${Date.now()}`,
-                  title: '🔑 Authorization Verified',
-                  desc: 'Welcome back, Lead D2C Architect Aman Shukla!'
-                },
-                ...prev
-              ]);
-            } else {
-              setLoginError('Access Denied: Invalid Email Address or Master Password.');
-            }
+            localStorage.removeItem('perfora_logged_in');
+            setIsLoggedIn(false);
+            setLoginError('You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.');
           }}>
             {loginError && (
               <div style={{
