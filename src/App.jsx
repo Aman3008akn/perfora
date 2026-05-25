@@ -98,6 +98,16 @@ const INITIAL_TICKETS = [
 const INDIAN_CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Hyderabad', 'Pune', 'Kolkata', 'Chennai', 'Jaipur', 'Ahmedabad', 'Chandigarh'];
 const VISITOR_FIRST_NAMES = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Ishaan', 'Rahul', 'Neha', 'Riya', 'Kiara', 'Anya', 'Dev', 'Arjun', 'Tanvi', 'Siddharth', 'Pranav'];
 const VISITOR_LAST_NAMES = ['Mehta', 'Sharma', 'Patel', 'Reddy', 'Iyer', 'Gupta', 'Joshi', 'Chawla', 'Verma', 'Kapoor', 'Rao', 'Bose', 'Deshmukh'];
+const LOGIN_TERMINATED_MESSAGE = 'You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.';
+
+const getStoredJson = (key, fallbackValue) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallbackValue;
+  } catch {
+    return fallbackValue;
+  }
+};
 
 const getStoredJson = (key, fallbackValue) => {
   try {
