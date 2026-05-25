@@ -238,6 +238,13 @@ export default function App() {
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpTimer, setOtpTimer] = useState(60);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('perfora_logged_in') === 'true') {
+      localStorage.removeItem('perfora_logged_in');
+    }
+    setIsLoggedIn(false);
+  }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
   const [auditActionFilter, setAuditActionFilter] = useState('all');
