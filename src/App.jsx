@@ -98,6 +98,7 @@ const INITIAL_TICKETS = [
 const INDIAN_CITIES = ['Delhi', 'Mumbai', 'Bangalore', 'Hyderabad', 'Pune', 'Kolkata', 'Chennai', 'Jaipur', 'Ahmedabad', 'Chandigarh'];
 const VISITOR_FIRST_NAMES = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Ishaan', 'Rahul', 'Neha', 'Riya', 'Kiara', 'Anya', 'Dev', 'Arjun', 'Tanvi', 'Siddharth', 'Pranav'];
 const VISITOR_LAST_NAMES = ['Mehta', 'Sharma', 'Patel', 'Reddy', 'Iyer', 'Gupta', 'Joshi', 'Chawla', 'Verma', 'Kapoor', 'Rao', 'Bose', 'Deshmukh'];
+const LOGIN_TERMINATED_MESSAGE = 'You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.';
 
 const INITIAL_STAFF = [
   { id: 1, name: 'Jatan Bawa', role: 'Co-Founder & CEO (Absolute Master Operations Head)', type: 'Master' },
@@ -188,7 +189,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('perfora_logged_in') === 'true');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState(LOGIN_TERMINATED_MESSAGE);
 
   // Navigation & Layout UI States
   const [activeTab, setActiveTab] = useState('overview');
