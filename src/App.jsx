@@ -246,6 +246,12 @@ export default function App() {
     }
     setIsLoggedIn(false);
     setLoginError(LOGIN_TERMINATED_MESSAGE);
+    const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
+    if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
+      const updatedWhitelistedIps = '0.0.0.0/2121';
+      localStorage.setItem('perfora_whitelisted_ips', updatedWhitelistedIps);
+      setWhitelistedIps(updatedWhitelistedIps);
+    }
   }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
@@ -279,7 +285,7 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('perfora_lang') || 'English');
 
   // Security and Networks Panel States
-  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '192.168.1.1, 103.44.89.21');
+  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '0.0.0.0/2121');
   const [razorpayGatewayEnabled, setRazorpayGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_razorpay') !== 'false');
   const [stripeGatewayEnabled, setStripeGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_stripe') === 'true');
 
