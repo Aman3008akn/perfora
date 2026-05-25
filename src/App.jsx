@@ -100,6 +100,15 @@ const VISITOR_FIRST_NAMES = ['Aarav', 'Vihaan', 'Aditya', 'Sai', 'Ishaan', 'Rahu
 const VISITOR_LAST_NAMES = ['Mehta', 'Sharma', 'Patel', 'Reddy', 'Iyer', 'Gupta', 'Joshi', 'Chawla', 'Verma', 'Kapoor', 'Rao', 'Bose', 'Deshmukh'];
 const LOGIN_TERMINATED_MESSAGE = 'You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.';
 
+const getStoredJson = (key, fallbackValue) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallbackValue;
+  } catch {
+    return fallbackValue;
+  }
+};
+
 const INITIAL_STAFF = [
   { id: 1, name: 'Jatan Bawa', role: 'Co-Founder & CEO (Absolute Master Operations Head)', type: 'Master' },
   { id: 2, name: 'Tushar Khurana', role: 'Co-Founder & COO (Full Brand Operations & Logistics Head)', type: 'Master' },
@@ -199,14 +208,14 @@ export default function App() {
   const [storePreviewOpen, setStorePreviewOpen] = useState(false);
 
   // Global Core State
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
-  const [subscriptions, setSubscriptions] = useState(INITIAL_SUBSCRIPTIONS);
-  const [customers, setCustomers] = useState(INITIAL_CUSTOMERS);
-  const [discounts, setDiscounts] = useState(INITIAL_DISCOUNTS);
-  const [supportTickets, setSupportTickets] = useState(INITIAL_TICKETS);
-  const [staffList, setStaffList] = useState(INITIAL_STAFF);
-  const [auditLogs, setAuditLogs] = useState(INITIAL_AUDIT_LOGS);
+  const [products, setProducts] = useState(() => getStoredJson('perfora_products', INITIAL_PRODUCTS));
+  const [orders, setOrders] = useState(() => getStoredJson('perfora_orders', INITIAL_ORDERS));
+  const [subscriptions, setSubscriptions] = useState(() => getStoredJson('perfora_subscriptions', INITIAL_SUBSCRIPTIONS));
+  const [customers, setCustomers] = useState(() => getStoredJson('perfora_customers', INITIAL_CUSTOMERS));
+  const [discounts, setDiscounts] = useState(() => getStoredJson('perfora_discounts', INITIAL_DISCOUNTS));
+  const [supportTickets, setSupportTickets] = useState(() => getStoredJson('perfora_support_tickets', INITIAL_TICKETS));
+  const [staffList, setStaffList] = useState(() => getStoredJson('perfora_staff', INITIAL_STAFF));
+  const [auditLogs, setAuditLogs] = useState(() => getStoredJson('perfora_audit_logs', INITIAL_AUDIT_LOGS));
 
   // Busy Dashboard & SEO States
   const [totalOrderCount, setTotalOrderCount] = useState(1048591);
@@ -450,6 +459,38 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('perfora_gateway_stripe', stripeGatewayEnabled);
   }, [stripeGatewayEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_products', JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_orders', JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_subscriptions', JSON.stringify(subscriptions));
+  }, [subscriptions]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_customers', JSON.stringify(customers));
+  }, [customers]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_discounts', JSON.stringify(discounts));
+  }, [discounts]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_support_tickets', JSON.stringify(supportTickets));
+  }, [supportTickets]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_staff', JSON.stringify(staffList));
+  }, [staffList]);
+
+  useEffect(() => {
+    localStorage.setItem('perfora_audit_logs', JSON.stringify(auditLogs));
+  }, [auditLogs]);
 
   // Fluctuating Analytics Dashboard Widgets
   useEffect(() => {
