@@ -309,6 +309,7 @@ export default function App() {
 
   // Add a toast notification helper
   const addToast = (title, desc) => {
+    if (!isLoggedIn) return;
     const id = Date.now();
     setToasts(prev => [...prev, { id, title, desc }]);
     playPulseSound();
@@ -334,6 +335,8 @@ export default function App() {
 
   // Simulated Orders background thread (Populating "orders apne aap aaye" requirement - FAST SPEED!)
   useEffect(() => {
+    if (!isLoggedIn) return;
+
     const orderInterval = setInterval(() => {
       // Choose a random product
       const randomProd = products[Math.floor(Math.random() * products.length)];
@@ -422,7 +425,7 @@ export default function App() {
     }, 4500); // 4.5 seconds interval for realistic and stable activity feed simulation!
 
     return () => clearInterval(orderInterval);
-  }, [products, muteOrderToasts]);
+  }, [isLoggedIn, products, muteOrderToasts]);
 
   // Settings Storage Auto-Saver Observers
   useEffect(() => {
