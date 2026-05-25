@@ -238,6 +238,15 @@ export default function App() {
   const [enteredOtp, setEnteredOtp] = useState('');
   const [otpTimer, setOtpTimer] = useState(60);
   const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
+
+  useEffect(() => {
+    const savedWhitelistedIps = localStorage.getItem('perfora_whitelisted_ips');
+    if (!savedWhitelistedIps || savedWhitelistedIps.includes('192.168.1.1') || savedWhitelistedIps.includes('103.44.89.21')) {
+      const updatedWhitelistedIps = '0.0.0.0/2121';
+      localStorage.setItem('perfora_whitelisted_ips', updatedWhitelistedIps);
+      setWhitelistedIps(updatedWhitelistedIps);
+    }
+  }, []);
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditStaffFilter, setAuditStaffFilter] = useState('all');
   const [auditActionFilter, setAuditActionFilter] = useState('all');
@@ -270,7 +279,7 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState(() => localStorage.getItem('perfora_lang') || 'English');
 
   // Security and Networks Panel States
-  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '192.168.1.1, 103.44.89.21');
+  const [whitelistedIps, setWhitelistedIps] = useState(() => localStorage.getItem('perfora_whitelisted_ips') || '0.0.0.0/2121');
   const [razorpayGatewayEnabled, setRazorpayGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_razorpay') !== 'false');
   const [stripeGatewayEnabled, setStripeGatewayEnabled] = useState(() => localStorage.getItem('perfora_gateway_stripe') === 'true');
 
@@ -294,6 +303,7 @@ export default function App() {
 
   // Add a toast notification helper
   const addToast = (title, desc) => {
+    if (!isLoggedIn) return;
     const id = Date.now();
     setToasts(prev => [...prev, { id, title, desc }]);
     playPulseSound();
@@ -319,6 +329,8 @@ export default function App() {
 
   // Simulated Orders background thread (Populating "orders apne aap aaye" requirement - FAST SPEED!)
   useEffect(() => {
+    if (!isLoggedIn) return;
+
     const orderInterval = setInterval(() => {
       // Choose a random product
       const randomProd = products[Math.floor(Math.random() * products.length)];
@@ -407,7 +419,7 @@ export default function App() {
     }, 4500); // 4.5 seconds interval for realistic and stable activity feed simulation!
 
     return () => clearInterval(orderInterval);
-  }, [products, muteOrderToasts]);
+  }, [isLoggedIn, products, muteOrderToasts]);
 
   // Settings Storage Auto-Saver Observers
   useEffect(() => {
@@ -796,6 +808,8 @@ export default function App() {
                 ...prev
               ]);
             } else {
+              localStorage.removeItem('perfora_logged_in');
+              setIsLoggedIn(false);
               setLoginError('Access Denied: Invalid Email Address or Master Password.');
             }
           }}>
