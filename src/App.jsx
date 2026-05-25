@@ -792,7 +792,7 @@ export default function App() {
             e.preventDefault();
             localStorage.removeItem('perfora_logged_in');
             setIsLoggedIn(false);
-            setLoginError('You have hit too many requests. Your account has been terminated. Please contact Dev. Nitin Sharma.');
+            setLoginError('Your access has been revoked.');
           }}>
             {loginError && (
               <div style={{
